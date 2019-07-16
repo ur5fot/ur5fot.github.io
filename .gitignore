@@ -23,4 +23,4 @@ yarn-error.log*
 *.sln
 *.sw?
 
-design/html5up-escape-velocity/
+/design/html5up-escape-velocity/
