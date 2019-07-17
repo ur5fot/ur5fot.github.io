@@ -2,10 +2,10 @@
     <div class="hello">
         <el-form ref="form">
             <el-form-item label="Distance 'km'">
-                <el-input-number controls-position="right" :step="100" :min="0" v-model="distance"></el-input-number>
+                <el-input-number :step="100" :min="0" v-model="distance"></el-input-number>
             </el-form-item>
             <el-form-item label="Speed 'km/h'">
-                <el-input-number controls-position="right" :step="20" :min="0" v-model="speed"></el-input-number>
+                <el-input-number :step="20" :min="0" v-model="speed"></el-input-number>
             </el-form-item>
             <el-form-item>
                 <el-radio v-model="mode" label="Comfort">Comfort</el-radio>
