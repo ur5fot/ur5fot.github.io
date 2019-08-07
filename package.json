@@ -1,47 +1,38 @@
 {
-  "name": "caralonta-fe",
-  "version": "0.1.0",
+  "name": "caralonta",
+  "version": "0.0.1",
+  "description": "travel in travel",
+  "productName": "caralonta app",
+  "cordovaId": "org.cordova.quasar.app",
+  "author": "ur5fot <wagvpered@gmail.com>",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "vue-cli-service test:unit"
+    "dev": "quasar dev",
+    "build": "quasar build",
+    "build:pwa": "quasar build -m pwa"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.136",
-    "core-js": "^2.6.5",
-    "element-ui": "^2.4.5",
-    "moment": "^2.24.0",
-    "register-service-worker": "^1.6.2",
-    "vue": "^2.6.10",
-    "vue-class-component": "^7.0.2",
-    "vue-property-decorator": "^8.1.0",
-    "vue-router": "^3.0.3",
-    "vuex": "^3.0.1"
+    "@quasar/extras": "^1.0.0",
+    "axios": "^0.18.1",
+    "quasar": "^1.0.0",
+    "vue-i18n": "^8.0.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.0",
-    "@types/mocha": "^5.2.4",
-    "@vue/cli-plugin-babel": "^3.9.0",
-    "@vue/cli-plugin-e2e-nightwatch": "^3.9.0",
-    "@vue/cli-plugin-eslint": "^3.9.0",
-    "@vue/cli-plugin-pwa": "^3.9.0",
-    "@vue/cli-plugin-typescript": "^3.9.0",
-    "@vue/cli-plugin-unit-mocha": "^3.9.0",
-    "@vue/cli-service": "^3.9.0",
-    "@vue/eslint-config-airbnb": "^4.0.0",
-    "@vue/eslint-config-typescript": "^4.0.0",
-    "@vue/test-utils": "1.0.0-beta.29",
+    "@quasar/app": "^1.0.0",
+    "@quasar/quasar-app-extension-typescript": "^1.0.0-alpha.14",
+    "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.1",
-    "chai": "^4.1.2",
-    "eslint": "^5.16.0",
+    "eslint": "^5.10.0",
+    "eslint-loader": "^2.1.1",
     "eslint-plugin-vue": "^5.0.0",
-    "node-sass": "^4.9.2",
-    "sass-loader": "^7.1.0",
-    "typescript": "^3.4.3",
-    "vue-cli-plugin-element": "^1.0.1",
-    "vue-template-compiler": "^2.6.10"
-  }
+    "@types/node": "11.9.5"
+  },
+  "engines": {
+    "node": ">= 8.9.0",
+    "npm": ">= 5.6.0",
+    "yarn": ">= 1.6.0"
+  },
+  "browserslist": [
+    "last 1 version, not dead, ie >= 11"
+  ]
 }
