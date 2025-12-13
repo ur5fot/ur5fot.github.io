@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeRec — учёт времени</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app" v-cloak>
+    <header class="app__header">
+      <div>
+        <h1>TimeRec</h1>
+        <p class="app__tagline">Автономный учёт времени по видам деятельности</p>
+      </div>
+      <div class="app__totals">
+        <span>Сброс: {{ resetLabel }}</span>
+        <span>Всего: {{ formatDuration(totalDuration) }}</span>
+      </div>
+    </header>
+
+    <section class="card card--actions">
+      <button class="reset-btn" @click="resetTimers">Сбросить таймеры</button>
+    </section>
+
+    <section class="card">
+      <h2>Добавить вид деятельности</h2>
+      <form class="new-activity" @submit.prevent="createActivity">
+        <input type="text" placeholder="Название" v-model.trim="newActivityName" required>
+        <input type="color" v-model="newActivityColor" title="Цвет" aria-label="Цвет">
+        <button type="submit">Добавить</button>
+      </form>
+    </section>
+
+    <section class="card activities" v-if="activities.length">
+      <h2>Активности за сегодня</h2>
+      <div class="activity" v-for="(activity, index) in activities" :key="activity.id" :style="{ borderColor: activity.color }" :class="{ 'activity--active': activity.id === activeId }">
+        <div class="activity__main">
+          <div class="activity__name" v-if="editingId !== activity.id">
+            <strong>{{ activity.name }}</strong>
+          </div>
+          <div class="activity__edit" v-else>
+            <input type="text" v-model="editingName" @keyup.enter="applyEdit(activity)" @blur="applyEdit(activity)" :data-edit-id="activity.id">
+          </div>
+          <div class="activity__time">{{ formatDuration(getActivityDuration(activity)) }}</div>
+        </div>
+        <div class="activity__controls">
+          <button @click="selectActivity(activity)" :disabled="activity.id === activeId">{{ activity.id === activeId ? 'Активно' : 'Выбрать' }}</button>
+          <button class="ghost" @click="startEditing(activity)">Редактировать</button>
+          <button class="ghost" @click="moveActivity(index, index - 1)" :disabled="index === 0">↑</button>
+          <button class="ghost" @click="moveActivity(index, index + 1)" :disabled="index === activities.length - 1">↓</button>
+          <button class="danger" @click="removeActivity(activity.id)">Удалить</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" v-else>
+      <p>Добавьте первый вид деятельности, чтобы начать отслеживание.</p>
+    </section>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+      });
+    }
+  </script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
