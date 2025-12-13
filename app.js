@@ -88,6 +88,14 @@ VUE.createApp({
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     },
+    buildResetSummary(snapshot) {
+      const total = snapshot.reduce((sum, activity) => sum + (activity.durationMs || 0), 0);
+      const lines = snapshot.map(
+        (activity) => `${activity.name}: ${this.formatDuration(activity.durationMs || 0)}`
+      );
+      lines.push(`Всего: ${this.formatDuration(total)}`);
+      return lines.join('\n');
+    },
     randomColor() {
       const palette = ['#2563eb', '#dc2626', '#0ea5e9', '#10b981', '#a855f7', '#f97316'];
       return palette[Math.floor(Math.random() * palette.length)];
@@ -199,12 +207,18 @@ VUE.createApp({
         return;
       }
       this.addElapsedToActive();
+      const snapshot = this.activities.map((activity) => ({
+        name: activity.name,
+        durationMs: activity.durationMs || 0
+      }));
+      const summary = this.buildResetSummary(snapshot);
       this.activities.forEach((activity) => {
         activity.durationMs = 0;
       });
       this.activeStart = Date.now();
       this.lastReset = isoNow();
       this.persist();
+      alert(`Накопленное время:\n${summary}`);
     }
   },
   mounted() {
