@@ -28,7 +28,7 @@
       <h2>Добавить вид деятельности</h2>
       <form class="new-activity" @submit.prevent="createActivity">
         <input type="text" placeholder="Название" v-model.trim="newActivityName" required>
-        <input type="color" v-model="newActivityColor" title="Цвет" aria-label="Цвет">
+        <input type="color" v-model="newActivityColor" @input="isColorManuallyPicked = true" title="Цвет" aria-label="Цвет">
         <button type="submit">Добавить</button>
       </form>
     </section>

@@ -7,6 +7,9 @@ const defaultActivities = () => [
   { id: 'life', name: 'Личное', color: '#f97316', durationMs: 0 }
 ];
 
+const ACTIVITY_COLORS = ['#2563eb', '#dc2626', '#0ea5e9', '#10b981', '#a855f7', '#f97316'];
+const pickRandomColor = () => ACTIVITY_COLORS[Math.floor(Math.random() * ACTIVITY_COLORS.length)];
+
 const isoNow = () => new Date().toISOString();
 
 const loadState = () => {
@@ -55,7 +58,8 @@ VUE.createApp({
       activeStart: state.activeStart,
       lastReset: state.lastReset,
       newActivityName: '',
-      newActivityColor: '#a855f7',
+      newActivityColor: pickRandomColor(),
+      isColorManuallyPicked: false,
       editingId: null,
       editingName: '',
       now: Date.now()
@@ -89,16 +93,17 @@ VUE.createApp({
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     },
     randomColor() {
-      const palette = ['#2563eb', '#dc2626', '#0ea5e9', '#10b981', '#a855f7', '#f97316'];
-      return palette[Math.floor(Math.random() * palette.length)];
+      return pickRandomColor();
     },
     createActivity() {
       const name = this.newActivityName.trim();
       if (!name) return;
+      const color =
+        this.isColorManuallyPicked && this.newActivityColor ? this.newActivityColor : this.randomColor();
       const activity = {
         id: `act-${Date.now().toString(36)}-${Math.random().toString(16).slice(2, 6)}`,
         name,
-        color: this.newActivityColor || this.randomColor(),
+        color,
         durationMs: 0
       };
       this.activities.push(activity);
@@ -108,6 +113,7 @@ VUE.createApp({
       }
       this.newActivityName = '';
       this.newActivityColor = this.randomColor();
+      this.isColorManuallyPicked = false;
       this.persist();
     },
     getActivityDuration(activity) {
