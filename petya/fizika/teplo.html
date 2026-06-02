@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teplo — príprava na kontrolnú</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Spectral:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4ecdd;
+    --paper-2:#ece0cb;
+    --ink:#2a2117;
+    --ink-soft:#5d5142;
+    --line:#d8c8ac;
+    --hot:#d64525;
+    --hot-2:#e8843b;
+    --cold:#1c6f68;
+    --cold-soft:#e2efe9;
+    --gold:#b6862c;
+    --shadow:0 2px 0 rgba(42,33,23,.08), 0 12px 30px -18px rgba(42,33,23,.5);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Spectral",Georgia,serif;
+    background:
+      radial-gradient(1200px 500px at 80% -10%, rgba(232,132,59,.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(28,111,104,.10), transparent 55%),
+      var(--paper);
+    color:var(--ink);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:0 18px 80px}
+  .mono{font-family:"IBM Plex Mono",monospace}
+
+  /* BACK LINK */
+  .backbar{padding:18px 0 0}
+  .backbar a{font-family:"IBM Plex Mono",monospace;font-size:.74rem;letter-spacing:.04em;color:var(--ink-soft);text-decoration:none;
+    border:1px solid var(--line);background:var(--paper);padding:7px 13px;border-radius:999px;transition:.16s;display:inline-flex;gap:6px;align-items:center}
+  .backbar a:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+  /* HEADER */
+  header.top{padding:30px 0 26px;text-align:center;position:relative}
+  .kicker{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;color:var(--hot);font-weight:600}
+  header.top h1{font-family:"Fraunces",serif;font-weight:900;font-size:clamp(2.6rem,9vw,4.4rem);line-height:.95;letter-spacing:-.02em;margin:.18em 0 .1em;
+    background:linear-gradient(95deg,var(--hot) 0%,var(--hot-2) 60%,var(--gold) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  header.top p{color:var(--ink-soft);font-size:1.05rem;font-style:italic;max-width:480px;margin:0 auto}
+  .thermo{display:inline-flex;gap:6px;margin-top:18px}
+  .thermo i{width:8px;height:8px;border-radius:50%;display:block;animation:pulse 2.4s ease-in-out infinite}
+  .thermo i:nth-child(1){background:var(--cold)}
+  .thermo i:nth-child(2){background:var(--gold);animation-delay:.3s}
+  .thermo i:nth-child(3){background:var(--hot-2);animation-delay:.6s}
+  .thermo i:nth-child(4){background:var(--hot);animation-delay:.9s}
+  @keyframes pulse{0%,100%{transform:scale(.7);opacity:.5}50%{transform:scale(1.15);opacity:1}}
+
+  /* TABS */
+  nav.tabs{position:sticky;top:0;z-index:50;display:flex;gap:4px;flex-wrap:wrap;justify-content:center;
+    padding:10px;margin:8px 0 30px;background:rgba(244,236,221,.86);backdrop-filter:blur(8px);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  nav.tabs button{font-family:"IBM Plex Mono",monospace;font-size:.78rem;letter-spacing:.04em;font-weight:500;
+    border:1px solid transparent;background:transparent;color:var(--ink-soft);padding:9px 14px;border-radius:999px;cursor:pointer;transition:.18s}
+  nav.tabs button:hover{color:var(--ink);background:var(--paper-2)}
+  nav.tabs button.active{background:var(--ink);color:var(--paper);box-shadow:var(--shadow)}
+
+  section{display:none;animation:fade .35s ease}
+  section.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  h2.sec{font-family:"Fraunces",serif;font-weight:900;font-size:2rem;letter-spacing:-.01em;margin:6px 0 6px}
+  h2.sec .num{font-family:"IBM Plex Mono",monospace;font-size:.85rem;color:var(--hot);font-weight:600;display:block;letter-spacing:.2em;margin-bottom:2px}
+  .lead{color:var(--ink-soft);font-size:1.08rem;margin-bottom:26px}
+
+  /* CARDS */
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin:16px 0;box-shadow:var(--shadow)}
+  .card h3{font-family:"Fraunces",serif;font-weight:600;font-size:1.3rem;margin-bottom:10px}
+  .card p{margin-bottom:10px}
+  .card p:last-child{margin-bottom:0}
+
+  .formula{font-family:"IBM Plex Mono",monospace;font-weight:600;background:linear-gradient(180deg,#fff7ea,#f6ead2);
+    border:1px solid var(--line);border-left:4px solid var(--hot);border-radius:10px;padding:14px 18px;margin:14px 0;font-size:1.15rem;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .formula b{color:var(--hot);font-size:1.35rem}
+  .where{font-family:"Spectral",serif;color:var(--ink-soft);font-size:.95rem;font-style:italic}
+
+  .pill{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.06em;
+    padding:3px 9px;border-radius:999px;text-transform:uppercase;font-weight:600;vertical-align:middle}
+  .pill.q{background:#fde7d8;color:var(--hot)}
+  .pill.c{background:var(--cold-soft);color:var(--cold)}
+  .pill.m{background:#efe6cf;color:var(--gold)}
+  .pill.dt{background:#e8ddf0;color:#7a4ba0}
+  .pill.kal{background:#dde9f3;color:#3a6ea5}
+  .pill.skup{background:#f6d9d2;color:#b03a23}
+
+  /* TABLE */
+  table.ctab{width:100%;border-collapse:collapse;margin:8px 0;font-size:.98rem}
+  table.ctab th,table.ctab td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left}
+  table.ctab th{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+  table.ctab td.val{font-family:"IBM Plex Mono",monospace;font-weight:500;text-align:right;color:var(--hot)}
+  table.ctab tr:hover td{background:var(--paper-2)}
+
+  ol.steps{list-style:none;counter-reset:s;margin:6px 0}
+  ol.steps li{counter-increment:s;position:relative;padding:8px 0 8px 40px;border-bottom:1px dashed var(--line)}
+  ol.steps li:last-child{border-bottom:none}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:8px;width:26px;height:26px;border-radius:50%;
+    background:var(--ink);color:var(--paper);font-family:"IBM Plex Mono",monospace;font-size:.78rem;font-weight:600;display:flex;align-items:center;justify-content:center}
+
+  /* PROBLEMS */
+  .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+  .filters button{font-family:"IBM Plex Mono",monospace;font-size:.72rem;border:1px solid var(--line);background:var(--paper);
+    color:var(--ink-soft);padding:6px 12px;border-radius:999px;cursor:pointer;transition:.15s}
+  .filters button:hover{background:var(--paper-2)}
+  .filters button.on{background:var(--hot);color:#fff;border-color:var(--hot)}
+
+  .prob{background:var(--paper);border:1px solid var(--line);border-radius:14px;margin:12px 0;overflow:hidden;box-shadow:var(--shadow)}
+  .prob .head{padding:16px 18px;display:flex;gap:12px;align-items:flex-start}
+  .prob .pn{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--hot);font-size:.95rem;flex-shrink:0;width:30px}
+  .prob .ptext{flex:1}
+  .prob .ptext .tags{margin-top:8px}
+  .prob .toggle{margin:0 18px 0 0}
+  .reveal{display:none;padding:0 18px 18px 60px}
+  .reveal.open{display:block}
+  .solbox{background:linear-gradient(180deg,#fbf4e6,#f3e8d2);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .solbox .stepline{font-family:"IBM Plex Mono",monospace;font-size:.92rem;padding:5px 0;color:var(--ink)}
+  .solbox .stepline span{color:var(--ink-soft)}
+  .answer{margin-top:12px;font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:1.05rem;
+    background:var(--cold);color:#fff;display:inline-block;padding:8px 16px;border-radius:8px}
+  .note{margin-top:10px;font-style:italic;color:var(--ink-soft);font-size:.92rem;border-left:3px solid var(--gold);padding-left:12px}
+
+  .btn{font-family:"IBM Plex Mono",monospace;font-size:.78rem;font-weight:600;letter-spacing:.03em;
+    border:1px solid var(--ink);background:transparent;color:var(--ink);padding:8px 16px;border-radius:999px;cursor:pointer;transition:.18s;white-space:nowrap}
+  .btn:hover{background:var(--ink);color:var(--paper)}
+  .btn.active{background:var(--ink);color:var(--paper)}
+
+  /* CALC */
+  .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:560px){.calc-grid{grid-template-columns:1fr}}
+  .field label{display:block;font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:5px}
+  .field input,.field select{width:100%;font-family:"IBM Plex Mono",monospace;font-size:1rem;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--hot)}
+  .result{margin-top:20px;text-align:center;background:var(--ink);color:var(--paper);border-radius:14px;padding:22px}
+  .result .val{font-family:"IBM Plex Mono",monospace;font-size:2rem;font-weight:600;color:var(--hot-2)}
+  .result .lbl{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;opacity:.7}
+
+  footer{text-align:center;margin-top:46px;color:var(--ink-soft);font-size:.85rem;font-style:italic}
+  .tip{background:var(--cold-soft);border:1px solid #bfe0d7;border-radius:14px;padding:16px 20px;margin:16px 0;font-size:.98rem}
+  .tip b{color:var(--cold)}
+
+  /* PAGER (vpred / vzad po sekciách) */
+  nav.pager{display:flex;justify-content:space-between;gap:12px;margin:40px 0 0}
+  .pbtn{font-family:"IBM Plex Mono",monospace;font-size:.74rem;letter-spacing:.03em;color:var(--ink-soft);
+    background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 16px;cursor:pointer;
+    box-shadow:var(--shadow);transition:.16s;max-width:48%;text-align:left}
+  nav.pager .pbtn:last-child{text-align:right}
+  .pbtn:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .pbtn .pl{display:block;text-transform:uppercase;font-size:.62rem;opacity:.7;margin-bottom:3px}
+  .pbtn .pt{font-family:"Fraunces",serif;font-size:1.04rem;font-weight:600}
+
+  /* PREKLAD RU (klik / ťuk na text) */
+  .thint{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;
+    background:var(--cold-soft);border:1px solid #bfe0d7;border-radius:12px;padding:9px 14px;margin:6px 0 4px;
+    font-size:.82rem;color:var(--cold)}
+  .thint b{color:var(--ink);font-style:normal}
+  .thint .btn{font-size:.7rem;padding:6px 12px;border-color:var(--cold);color:var(--cold)}
+  .thint .btn:hover,.thint .btn.active{background:var(--cold);color:#fff;border-color:var(--cold)}
+  [data-ru]{cursor:pointer;text-decoration:underline dotted rgba(28,111,104,.45);text-underline-offset:3px;text-decoration-thickness:1px}
+  [data-ru]:hover{text-decoration-color:var(--cold)}
+  .ru{display:none;margin:8px 0 2px;background:var(--cold-soft);border:1px solid #bfe0d7;border-left:3px solid var(--cold);
+    border-radius:8px;padding:8px 12px;color:var(--ink);font-style:normal;font-weight:400;font-size:.95rem;line-height:1.45}
+  .ru.open{display:block}
+  .ru .rl{font-family:"IBM Plex Mono",monospace;font-size:.58rem;letter-spacing:.14em;color:var(--cold);font-weight:700;margin-right:7px;vertical-align:1px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="backbar"><a href="../index.html">← Všetky lekcie / Уроки</a></div>
+
+  <header class="top">
+    <div class="kicker">Fyzika · príprava na kontrolnú</div>
+    <h1>Teplo</h1>
+    <p data-ru="Всё, что нужно знать, в одном месте — формула, метод, разобранные примеры и 50 решённых задач.">Všetko, čo treba vedieť, na jednom mieste — vzorec, postup, vzorové príklady a 50 vyriešených úloh.</p>
+    <div class="thermo"><i></i><i></i><i></i><i></i></div>
+  </header>
+
+  <div class="thint">
+    <span>💬 Ťukni na text → preklad · <b>нажми на текст — перевод</b></span>
+    <button class="btn" id="ruToggle">Ukázať preklad / Показать перевод</button>
+  </div>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="teoria" class="active">Teória</button>
+    <button data-tab="postup">Postup</button>
+    <button data-tab="priklady">Vzorové príklady</button>
+    <button data-tab="precvic">Precvičovanie</button>
+    <button data-tab="kalk">Kalkulačka</button>
+  </nav>
+
+  <main>
+
+  <!-- ============ TEORIA ============ -->
+  <section id="teoria" class="show">
+    <h2 class="sec"><span class="num">01 — Základy</span><span data-ru="Что такое теплота и какую формулу применять">Čo je teplo a aký vzorec použiť</span></h2>
+    <p class="lead" data-ru="Теплота Q — это энергия, которую тело принимает (нагревается) или отдаёт (охлаждается). Почти вся контрольная держится на одной формуле.">Teplo Q je energia, ktorú teleso <b>prijme</b> (ohrieva sa) alebo <b>odovzdá</b> (chladne). Skoro celá kontrolná stojí na jednom vzorci.</p>
+
+    <div class="card">
+      <h3 data-ru="1. Нагревание и охлаждение">1. Ohrievanie a ochladzovanie</h3>
+      <div class="formula"><b>Q = m · c · Δt</b></div>
+      <p class="where" data-ru="Q — теплота (Дж или кДж) · m — масса (кг) · c — удельная теплоёмкость (Дж/(кг·°C) или кДж/(кг·°C)) · Δt — изменение температуры = t(конец) − t(начало) (°C)">
+        <b>Q</b> — teplo (J alebo kJ) &nbsp;·&nbsp;
+        <b>m</b> — hmotnosť (kg) &nbsp;·&nbsp;
+        <b>c</b> — merná tepelná kapacita (J/kg·°C alebo kJ/kg·°C) &nbsp;·&nbsp;
+        <b>Δt</b> — zmena teploty = t<sub>koniec</sub> − t<sub>začiatok</sub> (°C)
+      </p>
+      <p data-ru="Та же формула применяется и когда тело нагревается, и когда остывает. При остывании тело теплоту отдаёт — разность температур берётся так же (большая минус меньшая).">Ten istý vzorec sa použije, či sa teleso ohrieva alebo chladne. Pri chladnutí teleso teplo <b>odovzdá</b> — počítaš s rozdielom teplôt rovnako (väčšia mínus menšia).</p>
+    </div>
+
+    <div class="card">
+      <h3 data-ru="2. Смена агрегатного состояния (плавление, отвердевание, испарение)">2. Zmena skupenstva (topenie, tuhnutie, vyparovanie)</h3>
+      <div class="formula"><b>Q = m · l</b></div>
+      <p class="where" data-ru="l(t) — удельная теплота плавления/отвердевания · l(v) — удельная теплота парообразования (Дж/кг или кДж/кг)">
+        <b>l<sub>t</sub></b> — merné skupenské teplo topenia/tuhnutia &nbsp;·&nbsp;
+        <b>l<sub>v</sub></b> — merné skupenské teplo vyparovania &nbsp;(J/kg alebo kJ/kg)
+      </p>
+      <p data-ru="При смене агрегатного состояния температура не меняется — поэтому здесь нет Δt! Лёд при 0 °C превращается в воду при 0 °C, вода при 100 °C — в пар при 100 °C.">Pri zmene skupenstva sa teplota <b>nemení</b> — preto tu <b>nie je</b> Δt! Ľad pri 0 °C sa mení na vodu pri 0 °C, voda pri 100 °C na paru pri 100 °C.</p>
+      <div class="tip" data-ru="Внимание — комбинированные задачи: если лёд сначала нагревается, потом плавится, а вода нагревается дальше — считаешь теплоту по шагам и в конце складываешь (Q = Q₁ + Q₂ + Q₃)."><b>Pozor — kombinované úlohy:</b> ak sa ľad najprv ohreje, potom roztopí a voda sa ďalej ohreje, počítaš teplo po krokoch a nakoniec ich <b>spočítaš</b> (Q = Q₁ + Q₂ + Q₃).</div>
+    </div>
+
+    <div class="card">
+      <h3 data-ru="3. Перевод единиц (самая частая ошибка!)">3. Premena jednotiek (najčastejšia chyba!)</h3>
+      <table class="ctab">
+        <tr><td>1 kg</td><td class="val">= 1000 g</td><td data-ru="→ из граммов дели на 1000">→ z gramov deľ 1000</td></tr>
+        <tr><td>1 t (tona)</td><td class="val">= 1000 kg</td><td data-ru="→ из тонн умножай на 1000">→ z ton násob 1000</td></tr>
+        <tr><td>1 kJ</td><td class="val">= 1000 J</td><td data-ru="→ из кДж в Дж умножай на 1000">→ z kJ na J násob 1000</td></tr>
+        <tr><td>1 MJ</td><td class="val">= 1000 kJ</td><td data-ru="→ = 1 000 000 Дж">→ = 1 000 000 J</td></tr>
+        <tr><td>1 l vody</td><td class="val">= 1 kg</td><td data-ru="→ объём воды ≈ масса">→ objem vody ≈ hmotnosť</td></tr>
+        <tr><td>1 ml vody</td><td class="val">= 1 g</td><td data-ru="→ 200 мл = 0,2 кг">→ 200 ml = 0,2 kg</td></tr>
+      </table>
+      <div class="tip" data-ru="Золотое правило: если c в кДж/(кг·°C), бери m в кг — и результат получится в кДж. Держись одной системы и не смешивай Дж с кДж."><b>Zlaté pravidlo:</b> ak je <i>c</i> v <span class="mono">kJ/kg·°C</span>, daj <i>m</i> v kg a výsledok vyjde v <span class="mono">kJ</span>. Drž sa jednej sústavy a nezamiešaj J s kJ.</div>
+    </div>
+
+    <div class="card">
+      <h3 data-ru="4. Таблица — удельная теплоёмкость c">4. Tabuľka — merná tepelná kapacita <span class="mono">c</span></h3>
+      <p class="where" style="margin-bottom:8px" data-ru="(при начальной температуре 20 °C)">(pri začiatočnej teplote 20 °C)</p>
+      <table class="ctab">
+        <tr><th data-ru="Вещество">Látka</th><th style="text-align:right">c (kJ/kg·°C)</th></tr>
+        <tr><td data-ru="Свинец">Olovo (Pb)</td><td class="val">0,129</td></tr>
+        <tr><td data-ru="Золото">Zlato (Au)</td><td class="val">0,129</td></tr>
+        <tr><td data-ru="Ртуть">Ortuť (Hg)</td><td class="val">0,139</td></tr>
+        <tr><td data-ru="Олово">Cín (Sn)</td><td class="val">0,227</td></tr>
+        <tr><td data-ru="Серебро">Striebro (Ag)</td><td class="val">0,235</td></tr>
+        <tr><td data-ru="Медь">Meď (Cu)</td><td class="val">0,383</td></tr>
+        <tr><td data-ru="Латунь">Mosadz</td><td class="val">0,394</td></tr>
+        <tr><td data-ru="Железо">Železo (Fe)</td><td class="val">0,450</td></tr>
+        <tr><td data-ru="Сталь">Oceľ</td><td class="val">0,460</td></tr>
+        <tr><td data-ru="Оконное стекло">Okenné sklo</td><td class="val">0,669</td></tr>
+        <tr><td data-ru="Алюминий">Hliník (Al)</td><td class="val">0,896</td></tr>
+        <tr><td data-ru="Кварцевое стекло">Kremíkové sklo</td><td class="val">0,961</td></tr>
+        <tr><td data-ru="Фарфор">Porcelán</td><td class="val">1,087</td></tr>
+        <tr><td data-ru="Масло">Olej</td><td class="val">2,0</td></tr>
+        <tr><td data-ru="Лёд">Ľad</td><td class="val">2,1</td></tr>
+        <tr><td data-ru="Глицерин">Glycerol</td><td class="val">2,39</td></tr>
+        <tr><td data-ru="Вода">Voda</td><td class="val">4,18</td></tr>
+      </table>
+      <div class="tip" data-ru="Удельные теплоты: лёд — плавление l(t) = 334 кДж/кг · вода — парообразование l(v) = 2 260 кДж/кг · алюминий l(t) = 399 кДж/кг · сталь l(t) = 258 кДж/кг."><b>Skupenské teplá:</b> ľad — topenie l<sub>t</sub> = 334 kJ/kg · voda — vyparovanie l<sub>v</sub> = 2 260 kJ/kg · hliník l<sub>t</sub> = 399 kJ/kg · oceľ l<sub>t</sub> = 258 kJ/kg.</div>
+    </div>
+  </section>
+
+  <!-- ============ POSTUP ============ -->
+  <section id="postup">
+    <h2 class="sec"><span class="num">02 — Metóda</span><span data-ru="Как решить любую задачу (4 шага)">Ako vyriešiť každú úlohu (4 kroky)</span></h2>
+    <p class="lead" data-ru="Когда знаешь эти 4 шага, неважно, что ищешь — Q, m, c или Δt. Действуй всегда одинаково.">Keď vieš tieto 4 kroky, je jedno, čo hľadáš — Q, m, c alebo Δt. Vždy postupuj rovnako.</p>
+
+    <div class="card">
+      <ol class="steps">
+        <li data-ru="Выпиши условие. Отметь числа: m = ?, c = ?, t₁ = ?, t₂ = ?, Q = ?. Сразу переведи единицы (g → kg, kJ → J по необходимости)."><b>Vypíš si zadanie.</b> Označ čísla: m = ?, c = ?, t₁ = ?, t₂ = ?, Q = ?. Hneď preveď jednotky (g → kg, kJ → J podľa potreby).</li>
+        <li data-ru="Определи, что ищешь. Теплоту Q? Массу m? Удельную теплоёмкость c? Изменение температуры Δt? От этого зависит, какую формулу выразишь."><b>Urči, čo hľadáš.</b> Teplo Q? Hmotnosť m? Mernú kapacitu c? Zmenu teploty Δt? To rozhodne, ktorý vzorec vyjadríš.</li>
+        <li data-ru="Выбери и преобразуй формулу. Из основной Q = m·c·Δt вырази неизвестное (см. таблицу ниже)."><b>Vyber a uprav vzorec.</b> Zo základu <span class="mono">Q = m·c·Δt</span> si vyjadri neznámu (viď tabuľka nižšie).</li>
+        <li data-ru="Подставь и вычисли. Проверь единицу результата и «разумность» числа."><b>Dosaď a vypočítaj.</b> Skontroluj jednotku výsledku a či je číslo „rozumné".</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3 data-ru="Формулы, выраженные для каждого неизвестного">Vzorce vyjadrené pre každú neznámu</h3>
+      <table class="ctab">
+        <tr><th data-ru="Ищу">Hľadám</th><th data-ru="Формула">Vzorec</th></tr>
+        <tr><td data-ru="теплоту Q">teplo Q</td><td class="mono" style="color:var(--hot)">Q = m · c · Δt</td></tr>
+        <tr><td data-ru="массу m">hmotnosť m</td><td class="mono" style="color:var(--hot)">m = Q ÷ (c · Δt)</td></tr>
+        <tr><td data-ru="теплоёмкость c">kapacitu c</td><td class="mono" style="color:var(--hot)">c = Q ÷ (m · Δt)</td></tr>
+        <tr><td data-ru="изменение температуры Δt">zmenu teploty Δt</td><td class="mono" style="color:var(--hot)">Δt = Q ÷ (m · c)</td></tr>
+        <tr><td data-ru="теплоту при смене агрегатного состояния">teplo pri zmene skupenstva</td><td class="mono" style="color:var(--hot)">Q = m · l</td></tr>
+      </table>
+    </div>
+
+    <div class="tip" data-ru="Калориметр (смешивание): более тёплое тело теплоту отдаёт, более холодное — принимает. Если пренебречь потерями, то Q(отданное) = Q(принятое). Так можно, например, найти массу воды."><b>Kalorimeter (zmiešavanie):</b> teleso teplejšie teplo <b>odovzdá</b>, studenšie ho <b>prijme</b>. Ak zanedbáme straty, platí <span class="mono">Q<sub>odovzdané</sub> = Q<sub>prijaté</sub></span>. Tým sa dá dopočítať napr. hmotnosť vody.</div>
+  </section>
+
+  <!-- ============ PRIKLADY ============ -->
+  <section id="priklady">
+    <h2 class="sec"><span class="num">03 — Ukážky</span><span data-ru="Разобранные примеры шаг за шагом">Vzorové príklady krok za krokom</span></h2>
+    <p class="lead" data-ru="Шесть типов, которые встретятся в контрольной. Пройди их не спеша — они разобраны подробнее, чем в тренировке.">Šesť typov, ktoré sa v kontrolnej objavia. Prejdi si ich pomaly — sú vysvetlené detailnejšie ako v precvičovaní.</p>
+    <div id="examples-host"></div>
+  </section>
+
+  <!-- ============ PRECVIC ============ -->
+  <section id="precvic">
+    <h2 class="sec"><span class="num">04 — Tréning</span><span data-ru="Все задачи из подготовки">Všetky úlohy z prípravy</span></h2>
+    <p class="lead" data-ru="Сначала попробуй посчитать сам, потом нажми «Zobraz riešenie» (Показать решение). Фильтруй по типу, если хочешь тренировать один вид.">Najprv skús vypočítať sám, potom klikni na <b>Zobraz riešenie</b>. Filtruj podľa typu, ak chceš trénovať jeden druh.</p>
+    <div class="filters" id="filters"></div>
+    <div style="margin-bottom:14px"><button class="btn" id="toggleAll">Rozbaliť všetky riešenia</button></div>
+    <div id="problems-host"></div>
+  </section>
+
+  <!-- ============ KALK ============ -->
+  <section id="kalk">
+    <h2 class="sec"><span class="num">05 — Nástroj</span><span data-ru="Калькулятор Q = m · c · Δt">Kalkulačka Q = m · c · Δt</span></h2>
+    <p class="lead" data-ru="Проверь свой результат. Выбери вещество или задай своё c.">Skontroluj si výsledok. Vyber látku alebo zadaj vlastné <i>c</i>.</p>
+    <div class="card">
+      <div class="calc-grid">
+        <div class="field">
+          <label data-ru="Вещество (подставит c)">Látka (doplní c)</label>
+          <select id="cSel"></select>
+        </div>
+        <div class="field">
+          <label data-ru="c — удельная теплоёмкость (кДж/(кг·°C))">c — merná kapacita (kJ/kg·°C)</label>
+          <input id="cIn" type="number" step="0.001" value="4.18">
+        </div>
+        <div class="field">
+          <label data-ru="m — масса (кг)">m — hmotnosť (kg)</label>
+          <input id="mIn" type="number" step="0.001" value="1">
+        </div>
+        <div class="field">
+          <label data-ru="Δt — изменение температуры (°C)">Δt — zmena teploty (°C)</label>
+          <input id="dtIn" type="number" step="0.1" value="40">
+        </div>
+      </div>
+      <div class="result">
+        <div class="lbl" data-ru="Теплота Q">Teplo Q</div>
+        <div class="val"><span id="resKj">0</span> kJ</div>
+        <div class="lbl" style="margin-top:6px"><span id="resJ">0</span> J</div>
+      </div>
+    </div>
+    <div class="tip" data-ru="Совет: если в задаче ищешь m, c или Δt, пересчитай из этой формулы — калькулятор поможет проверить и обратно (подставь свой результат и посмотри, сходится ли Q)."><b>Tip:</b> ak v zadaní hľadáš m, c alebo Δt, prepočítaj si to z tohto vzorca — kalkulačka ti pomôže overiť aj spätne (skús dosadiť svoj výsledok a pozri, či Q sedí).</div>
+  </section>
+
+  </main>
+
+  <nav class="pager" id="pager">
+    <button class="pbtn" id="pPrev"></button>
+    <button class="pbtn" id="pNext"></button>
+  </nav>
+
+  <footer data-ru="Сделано для подготовки к контрольной · держись значений из своей таблицы, если учитель указывает другое c.">Vytvorené na prípravu na kontrolnú · drž sa hodnôt z tvojej tabuľky, ak učiteľ uvádza iné c.</footer>
+</div>
+
+<script>
+/* ---------- C TABLE ---------- */
+const CTAB = [
+  ["Voda",4.18],["Ľad",2.1],["Olej",2.0],["Glycerol",2.39],
+  ["Olovo (Pb)",0.129],["Zlato (Au)",0.129],["Ortuť (Hg)",0.139],
+  ["Cín (Sn)",0.227],["Striebro (Ag)",0.235],["Meď (Cu)",0.383],
+  ["Mosadz",0.394],["Železo (Fe)",0.45],["Oceľ",0.46],
+  ["Okenné sklo",0.669],["Hliník (Al)",0.896],["Kremíkové sklo",0.961],["Porcelán",1.087]
+];
+
+/* ---------- RU PREKLAD: pomocníci ---------- */
+function attr(t){ return t ? `data-ru="${String(t).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}"` : ''; }
+let ruAll=false;
+function attachRu(scope){
+  scope.querySelectorAll('[data-ru]:not([data-ru-init])').forEach(el=>{
+    el.setAttribute('data-ru-init','1');
+    const box=document.createElement('div');
+    box.className='ru';
+    box.innerHTML='<span class="rl">RU</span>'+el.getAttribute('data-ru');
+    const tag=el.tagName;
+    if(tag==='TD'||tag==='TH'||tag==='LI'){ el.appendChild(box); }
+    else { el.insertAdjacentElement('afterend', box); }
+    if(ruAll) box.classList.add('open');
+    el.addEventListener('click',e=>{
+      if(e.target.closest('a,button')) return;
+      box.classList.toggle('open');
+    });
+  });
+}
+
+/* ---------- TABS + PAGER ---------- */
+const TAB_ORDER=['teoria','postup','priklady','precvic','kalk'];
+const TAB_NAMES={teoria:'Teória',postup:'Postup',priklady:'Vzorové príklady',precvic:'Precvičovanie',kalk:'Kalkulačka'};
+const tabs=document.getElementById('tabs');
+function goTo(id){
+  if(!TAB_NAMES[id])return;
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));
+  document.querySelectorAll('main section').forEach(s=>s.classList.toggle('show',s.id===id));
+  updatePager(id);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+tabs.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  goTo(b.dataset.tab);
+});
+const pPrev=document.getElementById('pPrev'), pNext=document.getElementById('pNext');
+function updatePager(id){
+  const i=TAB_ORDER.indexOf(id);
+  if(i>0){ pPrev.style.visibility='visible'; pPrev.dataset.go=TAB_ORDER[i-1];
+    pPrev.innerHTML=`<span class="pl">← Predošlé</span><span class="pt">${TAB_NAMES[TAB_ORDER[i-1]]}</span>`; }
+  else pPrev.style.visibility='hidden';
+  if(i<TAB_ORDER.length-1){ pNext.style.visibility='visible'; pNext.dataset.go=TAB_ORDER[i+1];
+    pNext.innerHTML=`<span class="pl">Ďalej →</span><span class="pt">${TAB_NAMES[TAB_ORDER[i+1]]}</span>`; }
+  else pNext.style.visibility='hidden';
+}
+pPrev.addEventListener('click',function(){ if(this.dataset.go) goTo(this.dataset.go); });
+pNext.addEventListener('click',function(){ if(this.dataset.go) goTo(this.dataset.go); });
+document.addEventListener('keydown',e=>{
+  if(e.target.matches('input,select,textarea'))return;
+  const i=TAB_ORDER.indexOf(document.querySelector('#tabs button.active').dataset.tab);
+  if(e.key==='ArrowLeft' && i>0) goTo(TAB_ORDER[i-1]);
+  if(e.key==='ArrowRight' && i<TAB_ORDER.length-1) goTo(TAB_ORDER[i+1]);
+});
+
+/* ---------- WORKED EXAMPLES ---------- */
+const EXAMPLES=[
+  {title:"Typ 1 · Ohrievanie — hľadáme Q",
+   text:"Vypočítaj teplo, ktoré prijala voda s hmotnosťou 1,2 kg, ak sa jej teplota zvýšila z 10 °C na 50 °C.",
+   steps:[
+     "Vypíšem: m = 1,2 kg · c(voda) = 4,18 kJ/kg·°C · t₁ = 10 °C · t₂ = 50 °C",
+     "Hľadám Q → vzorec Q = m · c · Δt",
+     "Δt = t₂ − t₁ = 50 − 10 = 40 °C",
+     "Q = 1,2 · 4,18 · 40 = 200,64 kJ"
+   ], ans:"Q = 200,64 kJ"},
+  {title:"Typ 2 · Chladnutie — hľadáme Q",
+   text:"Vypočítaj, aké teplo odovzdala hliníková guľôčka s hmotnosťou 175 g, ak jej teplota klesla z 84 °C na 19 °C.",
+   steps:[
+     "Premena: 175 g = 0,175 kg · c(hliník) = 0,896 kJ/kg·°C",
+     "Δt = 84 − 19 = 65 °C (berieme rozdiel, väčšia − menšia)",
+     "Q = m · c · Δt = 0,175 · 0,896 · 65 = 10,192 kJ"
+   ], ans:"Q ≈ 10,19 kJ"},
+  {title:"Typ 3 · Hľadáme c (akú látku/kapacitu)",
+   text:"Neznámej kvapaline s hmotnosťou 0,5 kg a teplotou 20 °C sme dodali 62,7 kJ tepla. Ohriala sa na 80 °C. Urči mernú kapacitu (akú látku).",
+   steps:[
+     "m = 0,5 kg · Q = 62,7 kJ · Δt = 80 − 20 = 60 °C",
+     "Hľadám c → vyjadrím: c = Q ÷ (m · Δt)",
+     "c = 62,7 ÷ (0,5 · 60) = 62,7 ÷ 30 = 2,09 kJ/kg·°C",
+     "Podľa tabuľky c ≈ 2 → je to OLEJ"
+   ], ans:"c = 2,09 kJ/kg·°C → olej"},
+  {title:"Typ 4 · Hľadáme konečnú teplotu",
+   text:"Na akú teplotu sa ohreje voda s hmotnosťou 400 g a teplotou 20 °C, ak jej dodáme 25 080 J tepla? (c = 4,2 kJ/kg·°C)",
+   steps:[
+     "Premena: 400 g = 0,4 kg · 25 080 J = 25,08 kJ",
+     "Hľadám Δt → vyjadrím: Δt = Q ÷ (m · c)",
+     "Δt = 25,08 ÷ (0,4 · 4,2) = 25,08 ÷ 1,68 ≈ 15 °C",
+     "Konečná teplota = 20 + 15 = 35 °C"
+   ], ans:"t = 35 °C"},
+  {title:"Typ 5 · Kalorimeter (zmiešavanie)",
+   text:"Do kalorimetra sme vložili 100 g závažie zo železa s teplotou 100 °C a priliali studenú vodu s teplotou 27 °C. Teplota sa ustálila na 30 °C. (a) Aké teplo odovzdalo závažie? (b) Koľko studenej vody sme priliali?",
+   steps:[
+     "Závažie (železo): m = 0,1 kg · c = 0,45 · chladne zo 100 na 30 → Δt = 70 °C",
+     "(a) Q = 0,1 · 0,45 · 70 = 3,15 kJ  ← toto teplo prijala aj voda",
+     "Voda sa ohriala z 27 na 30 → Δt = 3 °C, c = 4,18",
+     "(b) m = Q ÷ (c · Δt) = 3,15 ÷ (4,18 · 3) = 3,15 ÷ 12,54 ≈ 0,251 kg"
+   ], ans:"Q = 3,15 kJ · vody ≈ 0,25 kg (250 g)"},
+  {title:"Typ 6 · Zmena skupenstva (kombinovaná)",
+   text:"Kus ľadu s hmotnosťou 3 kg a teplotou −10 °C sa má premeniť na vodu s teplotou 20 °C. Koľko tepla musíme dodať? (c(ľad) = 2,09 · l_t = 334 · c(voda) = 4,18)",
+   steps:[
+     "Rozdelím na 3 kroky a nakoniec spočítam.",
+     "Q₁ — ohrev ľadu −10→0: 3 · 2,09 · 10 = 62,7 kJ",
+     "Q₂ — topenie ľadu (Q=m·l): 3 · 334 = 1002 kJ",
+     "Q₃ — ohrev vody 0→20: 3 · 4,18 · 20 = 250,8 kJ",
+     "Q = Q₁ + Q₂ + Q₃ = 62,7 + 1002 + 250,8 = 1315,5 kJ"
+   ], ans:"Q = 1315,5 kJ"}
+];
+
+/* ---------- RU: vzorové príklady ---------- */
+const EX_RU=[
+  {title:"Тип 1 · Нагревание — ищем Q",
+   text:"Вычисли теплоту, которую приняла вода массой 1,2 кг, если её температура повысилась с 10 °C до 50 °C.",
+   steps:[
+     "Выписываю: m = 1,2 кг · c(вода) = 4,18 кДж/(кг·°C) · t₁ = 10 °C · t₂ = 50 °C",
+     "Ищу Q → формула Q = m · c · Δt",
+     "Δt = t₂ − t₁ = 50 − 10 = 40 °C",
+     "Q = 1,2 · 4,18 · 40 = 200,64 кДж"
+   ], ans:"Q = 200,64 кДж"},
+  {title:"Тип 2 · Охлаждение — ищем Q",
+   text:"Вычисли, сколько теплоты отдал алюминиевый шарик массой 175 г, если его температура упала с 84 °C до 19 °C.",
+   steps:[
+     "Перевод: 175 г = 0,175 кг · c(алюминий) = 0,896 кДж/(кг·°C)",
+     "Δt = 84 − 19 = 65 °C (берём разность, большая − меньшая)",
+     "Q = m · c · Δt = 0,175 · 0,896 · 65 = 10,192 кДж"
+   ], ans:"Q ≈ 10,19 кДж"},
+  {title:"Тип 3 · Ищем c (какое вещество/теплоёмкость)",
+   text:"Неизвестной жидкости массой 0,5 кг при температуре 20 °C сообщили 62,7 кДж теплоты. Она нагрелась до 80 °C. Определи удельную теплоёмкость (какое вещество).",
+   steps:[
+     "m = 0,5 кг · Q = 62,7 кДж · Δt = 80 − 20 = 60 °C",
+     "Ищу c → выражаю: c = Q ÷ (m · Δt)",
+     "c = 62,7 ÷ (0,5 · 60) = 62,7 ÷ 30 = 2,09 кДж/(кг·°C)",
+     "По таблице c ≈ 2 → это МАСЛО"
+   ], ans:"c = 2,09 кДж/(кг·°C) → масло"},
+  {title:"Тип 4 · Ищем конечную температуру",
+   text:"До какой температуры нагреется вода массой 400 г при температуре 20 °C, если ей сообщить 25 080 Дж теплоты? (c = 4,2 кДж/(кг·°C))",
+   steps:[
+     "Перевод: 400 г = 0,4 кг · 25 080 Дж = 25,08 кДж",
+     "Ищу Δt → выражаю: Δt = Q ÷ (m · c)",
+     "Δt = 25,08 ÷ (0,4 · 4,2) = 25,08 ÷ 1,68 ≈ 15 °C",
+     "Конечная температура = 20 + 15 = 35 °C"
+   ], ans:"t = 35 °C"},
+  {title:"Тип 5 · Калориметр (смешивание)",
+   text:"В калориметр положили груз из железа массой 100 г с температурой 100 °C и налили холодную воду с температурой 27 °C. Температура установилась на 30 °C. (a) Сколько теплоты отдал груз? (b) Сколько холодной воды налили?",
+   steps:[
+     "Груз (железо): m = 0,1 кг · c = 0,45 · остывает со 100 до 30 → Δt = 70 °C",
+     "(a) Q = 0,1 · 0,45 · 70 = 3,15 кДж ← эту теплоту приняла и вода",
+     "Вода нагрелась с 27 до 30 → Δt = 3 °C, c = 4,18",
+     "(b) m = Q ÷ (c · Δt) = 3,15 ÷ (4,18 · 3) = 3,15 ÷ 12,54 ≈ 0,251 кг"
+   ], ans:"Q = 3,15 кДж · воды ≈ 0,25 кг (250 г)"},
+  {title:"Тип 6 · Смена агрегатного состояния (комбинированная)",
+   text:"Кусок льда массой 3 кг при температуре −10 °C нужно превратить в воду с температурой 20 °C. Сколько теплоты надо сообщить? (c(лёд) = 2,09 · l_t = 334 · c(вода) = 4,18)",
+   steps:[
+     "Разбиваю на 3 шага и в конце складываю.",
+     "Q₁ — нагрев льда −10→0: 3 · 2,09 · 10 = 62,7 кДж",
+     "Q₂ — плавление льда (Q=m·l): 3 · 334 = 1002 кДж",
+     "Q₃ — нагрев воды 0→20: 3 · 4,18 · 20 = 250,8 кДж",
+     "Q = Q₁ + Q₂ + Q₃ = 62,7 + 1002 + 250,8 = 1315,5 кДж"
+   ], ans:"Q = 1315,5 кДж"}
+];
+
+const exHost=document.getElementById('examples-host');
+EXAMPLES.forEach((ex,i)=>{
+  const r=EX_RU[i]||{};
+  const c=document.createElement('div');c.className='card';
+  c.innerHTML=`<h3 ${attr(r.title)}>${ex.title}</h3><p style="font-style:italic;color:var(--ink-soft)" ${attr(r.text)}>${ex.text}</p>
+    <div class="solbox" style="margin-top:12px">
+      ${ex.steps.map((s,j)=>`<div class="stepline" ${attr(r.steps&&r.steps[j])}>${s}</div>`).join('')}
+      <div class="answer" ${attr(r.ans)}>${ex.ans}</div>
+    </div>`;
+  exHost.appendChild(c);
+});
+
+/* ---------- ALL PROBLEMS ---------- */
+/* type codes: q=hľadáme teplo, c=hľadáme kapacitu, m=hľadáme hmotnosť, dt=hľadáme teplotu, kal=kalorimeter, skup=zmena skupenstva */
+const TYPES={q:["Hľadáme teplo Q","q"],c:["Hľadáme c","c"],m:["Hľadáme hmotnosť","m"],
+  dt:["Hľadáme teplotu","dt"],kal:["Kalorimeter","kal"],skup:["Zmena skupenstva","skup"]};
+
+const P=[
+ // --- find Q ---
+ {t:"q",x:"Voda 1,2 kg sa ohrieva z 10 °C na 50 °C. Aké teplo prijala?",
+  s:["Δt = 50 − 10 = 40 °C","Q = m·c·Δt = 1,2 · 4,18 · 40"],a:"Q = 200,64 kJ"},
+ {t:"q",x:"Hliníková guľôčka 175 g klesla z 84 °C na 19 °C. Aké teplo odovzdala? (c = 0,896)",
+  s:["175 g = 0,175 kg · Δt = 84 − 19 = 65 °C","Q = 0,175 · 0,896 · 65"],a:"Q ≈ 10,19 kJ"},
+ {t:"q",x:"Strieborná retiazka 14 g sa ohriala z 18 °C na 36 °C. (c = 0,234)",
+  s:["14 g = 0,014 kg · Δt = 18 °C","Q = 0,014 · 0,234 · 18"],a:"Q ≈ 0,059 kJ",n:"V zadaní uvedené 0,058 kJ — rozdiel je len zaokrúhlenie."},
+ {t:"q",x:"Železný valček 222 g sa ohrial z 24 °C na 95 °C. (c = 0,45)",
+  s:["222 g = 0,222 kg · Δt = 71 °C","Q = 0,222 · 0,45 · 71"],a:"Q = 7,09 kJ"},
+ {t:"q",x:"Glycerol 2 kg, teplota stúpne o 10 °C. (c = 2,39 = 2390 J)",
+  s:["Δt = 10 °C","Q = 2 · 2,39 · 10 = 47,8 kJ = 47 800 J"],a:"Q = 47 800 J"},
+ {t:"q",x:"Oceľový výkovok 540 g vložený do pece, teplota stúpla z 15 °C na 600 °C. (c = 460 J)",
+  s:["540 g = 0,54 kg · c = 0,46 kJ · Δt = 585 °C","Q = 0,54 · 0,46 · 585"],a:"Q = 145 314 J ≈ 145 kJ"},
+ {t:"q",x:"Voda v 120-litrovom bojleri sa ohrieva z 20 °C na 80 °C. (c = 4,2)",
+  s:["120 l vody = 120 kg · Δt = 60 °C","Q = 120 · 4,2 · 60"],a:"Q = 30 240 kJ"},
+ {t:"q",x:"Po smažení zostalo 1,8 kg oleja teploty 140 °C. Koľko tepla uvoľní, kým vychladne na 20 °C? (c = 2)",
+  s:["Δt = 140 − 20 = 120 °C","Q = 1,8 · 2 · 120"],a:"Q = 432 kJ"},
+ {t:"q",x:"Radiátormi pretieklo 900 m³ teplej vody, vstup 60 °C, výstup 40 °C. Koľko tepla voda odovzdala? (c = 4,2)",
+  s:["Δt = 60 − 40 = 20 °C","Podľa kľúča: Q = 900 · 4,2 · 20 = 75 600 kJ = 75,6 MJ"],a:"Q = 75,6 MJ",
+  n:"Kľúč počíta s m = 900 (kg). Fyzikálne 900 m³ vody = 900 000 kg — drž sa však výsledku z prípravy (75,6 MJ)."},
+ {t:"q",x:"Hliníkové teleso 600 g sa ochladí vo vodnom kúpeli z 345 °C na 20 °C. Aké teplo odovzdá vode? (c = 0,896)",
+  s:["600 g = 0,6 kg · Δt = 325 °C","Q = 0,6 · 0,896 · 325"],a:"Q = 174,72 kJ"},
+ {t:"q",x:"Teleso z medi 850 g sa ochladí z 145 °C na 18 °C. Aké teplo odovzdá vode? (c = 0,383)",
+  s:["850 g = 0,85 kg · Δt = 127 °C","Q = 0,85 · 0,383 · 127"],a:"Q ≈ 41,34 kJ"},
+ {t:"q",x:"Koľko tepla sa spotrebuje na ohriatie 10 kg železa z 20 °C na 500 °C? (c = 0,45)",
+  s:["Δt = 480 °C","Q = 10 · 0,45 · 480"],a:"Q = 2160 kJ"},
+ {t:"q",x:"Vode 5 kg s teplotou 20 °C sme dodali teplo 1365 kJ. Na akú teplotu sa ohriala?",
+  s:["Δt = Q ÷ (m·c) = 1365 ÷ (5 · 4,2) = 65 °C","t = 20 + 65"],a:"t = 85 °C",
+  n:"Tu hľadáme teplotu (typ „Δt“), ale patrí k tej istej rodine vzorcov."},
+ {t:"q",x:"Ľadová kocka 650 g, teplota sa zvýši z −8 °C na −1 °C. (c = 2100 J)",
+  s:["650 g = 0,65 kg · c = 2,1 kJ · Δt = 7 °C","Q = 0,65 · 2,1 · 7"],a:"Q = 9,555 kJ = 9555 J",
+  n:"Pozor: ľad je stále tuhý (−8 až −1 °C), takže ide len o ohrev, žiadne topenie."},
+ {t:"q",x:"Porcelánový tanier 180 g sa ochladí o 32 °C. (c = 1087 J)",
+  s:["180 g = 0,18 kg · c = 1,087 kJ · Δt = 32 °C","Q = 0,18 · 1,087 · 32"],a:"Q ≈ 6,26 kJ = 6261 J"},
+ {t:"q",x:"Mosadzný odliatok 500 g sa zohreje z 48 °C na 320 °C. (c = 394 J)",
+  s:["500 g = 0,5 kg · c = 0,394 kJ · Δt = 272 °C","Q = 0,5 · 0,394 · 272"],a:"Q ≈ 53,58 kJ"},
+ {t:"q",x:"Železné teleso 20 kg, teplota klesne z 580 °C na 20 °C. (c = 0,45)",
+  s:["Δt = 560 °C","Q = 20 · 0,45 · 560"],a:"Q = 5040 kJ"},
+ {t:"q",x:"Medený odliatok 15 kg sa ochladil o 320 °C. (c = 0,383)",
+  s:["Δt = 320 °C","Q = 15 · 0,383 · 320"],a:"Q = 1838,4 kJ"},
+ {t:"q",x:"Koľko tepla prijala voda 750 kg, ak sa ohriala z 37 °C na 63 °C?",
+  s:["Δt = 26 °C","Q = 750 · 4,18 · 26"],a:"Q = 81 510 kJ",n:"S c = 4,2 vyjde 81 900 kJ."},
+ {t:"q",x:"Kocka ľadu 0,5 kg, teplota stúpla z −15 °C na −4 °C. (c = 2090 J)",
+  s:["c = 2,09 kJ · Δt = 11 °C","Q = 0,5 · 2,09 · 11"],a:"Q = 11,495 kJ = 11 495 J"},
+ {t:"q",x:"Voda s objemom 200 ml, teplota stúpne o 20 °C. Aké teplo prijme?",
+  s:["200 ml vody = 0,2 kg · Δt = 20 °C","Q = 0,2 · 4,18 · 20"],a:"Q = 16,72 kJ"},
+ {t:"q",x:"Voda s objemom 250 ml, teplota stúpne o 30 °C.",
+  s:["250 ml = 0,25 kg · Δt = 30 °C","Q = 0,25 · 4,18 · 30"],a:"Q = 31,35 kJ"},
+ {t:"q",x:"V nádobe je olej s objemom 3,5 litra. Koľko tepla odovzdá pri ochladení z 50 °C na 10 °C? (c = 2)",
+  s:["Hustota oleja ≈ 0,9 kg/l → m = 3,5 · 0,9 = 3,15 kg","Δt = 40 °C · Q = 3,15 · 2 · 40 = 252 kJ"],a:"Q ≈ 252 kJ",
+  n:"Ak by učiteľ bral 3,5 l = 3,5 kg, vyjde 280 kJ. Olej je ľahší ako voda, preto sa použila hustota."},
+ // --- find c ---
+ {t:"c",x:"Oceľové teleso 2 kg sa ohrialo z 15 °C na 80 °C dodaním 60 kJ. Vypočítaj c.",
+  s:["Δt = 65 °C","c = Q ÷ (m·Δt) = 60 ÷ (2 · 65) = 60 ÷ 130"],a:"c ≈ 0,46 kJ/kg·°C (oceľ)"},
+ {t:"c",x:"Neznámej kvapaline 0,5 kg (20 °C) sme dodali 62,7 kJ, ohriala sa na 80 °C. Aká je to kvapalina?",
+  s:["Δt = 60 °C","c = 62,7 ÷ (0,5 · 60) = 2,09"],a:"c = 2,09 → olej"},
+ {t:"c",x:"Telesu 1,8 kg bolo dodané teplo 56,304 kJ, teplota stúpla z 15 °C na 83 °C. Vypočítaj c.",
+  s:["Δt = 68 °C","c = 56,304 ÷ (1,8 · 68) = 56,304 ÷ 122,4"],a:"c = 0,46 kJ/kg·°C (oceľ)"},
+ {t:"c",x:"Kvapalina 650 g prijatím 20,88 kJ zvýšila teplotu z 18 °C na 35 °C. Urči c.",
+  s:["650 g = 0,65 kg · Δt = 17 °C","c = 20,88 ÷ (0,65 · 17) = 20,88 ÷ 11,05"],a:"c ≈ 1,89 kJ/kg·°C"},
+ {t:"c",x:"Telesu 4 kg sme dodali 672 kJ, zohrialo sa z 30 °C na 70 °C. Aká je c?",
+  s:["Δt = 40 °C","c = 672 ÷ (4 · 40) = 672 ÷ 160"],a:"c = 4,2 → voda"},
+ // --- find m ---
+ {t:"m",x:"Vypočítaj hmotnosť vody, ktorá pri ochladení z 62 °C na 37 °C odovzdala 522,5 kJ.",
+  s:["Δt = 25 °C","m = Q ÷ (c·Δt) = 522,5 ÷ (4,2 · 25) = 522,5 ÷ 105"],a:"m ≈ 4,98 kg",n:"S c = 4,18 vyjde presne 5 kg; kľúč počíta s c = 4,2."},
+ {t:"m",x:"Teleso z cínu odovzdalo 45 400 J, jeho teplota klesla o 100 °C. Vypočítaj hmotnosť. (c = 227 J)",
+  s:["45 400 J = 45,4 kJ · c = 0,227 kJ · Δt = 100 °C","m = 45,4 ÷ (0,227 · 100) = 45,4 ÷ 22,7"],a:"m = 2 kg"},
+ {t:"m",x:"Vypočítaj hmotnosť vody, ktorá dodaním 84 kJ zvýšila teplotu z 30 °C na 40 °C.",
+  s:["Δt = 10 °C","m = 84 ÷ (4,2 · 10) = 84 ÷ 42"],a:"m = 2 kg"},
+ // --- find dt / teplota ---
+ {t:"dt",x:"Medený valec 15 kg odovzdal pri ochladzovaní 114,9 kJ. O koľko °C sa ochladil? (c = 0,383)",
+  s:["Δt = Q ÷ (m·c) = 114,9 ÷ (15 · 0,383) = 114,9 ÷ 5,745"],a:"Δt = 20 °C"},
+ {t:"dt",x:"Na akú teplotu sa ohreje voda 400 g (20 °C), ak jej dodáme 25 080 J? (c = 4,2)",
+  s:["400 g = 0,4 kg · 25 080 J = 25,08 kJ","Δt = 25,08 ÷ (0,4 · 4,2) ≈ 15 °C · t = 20 + 15"],a:"t = 35 °C"},
+ {t:"dt",x:"O koľko °C sa zmení teplota železného kľúča 0,004 t, ak prijme 360 000 J? (c = 0,45)",
+  s:["0,004 t = 4 kg · 360 000 J = 360 kJ","Δt = 360 ÷ (4 · 0,45) = 360 ÷ 1,8"],a:"Δt = 200 °C"},
+ {t:"dt",x:"Na akú teplotu sa ohreje voda 300 g (15 °C), ak jej dodáme 0,03 MJ?",
+  s:["300 g = 0,3 kg · 0,03 MJ = 30 kJ","Δt = 30 ÷ (0,3 · 4,2) ≈ 23,8 °C · t = 15 + 23,8"],a:"t ≈ 38,8 °C"},
+ // --- kalorimeter ---
+ {t:"kal",x:"Železné závažie 100 g (100 °C) + studená voda (27 °C) → ustáli sa na 30 °C. Aké teplo odovzdalo závažie vode?",
+  s:["m = 0,1 kg · c(Fe) = 0,45 · Δt = 100 − 30 = 70 °C","Q = 0,1 · 0,45 · 70"],a:"Q = 3,15 kJ"},
+ {t:"kal",x:"Koľko tepla prijala v kalorimetri voda od závažia? (z predošlej úlohy)",
+  s:["Zákon zachovania: Q prijaté = Q odovzdané","ak zanedbáme straty"],a:"Q = 3,15 kJ"},
+ {t:"kal",x:"Koľko studenej vody sme priliali do kalorimetra? Voda sa ohriala z 27 °C na 30 °C.",
+  s:["Δt = 3 °C · Q = 3,15 kJ","m = Q ÷ (c·Δt) = 3,15 ÷ (4,18 · 3) = 3,15 ÷ 12,54"],a:"m ≈ 0,251 kg (251 g)"},
+ // --- zmena skupenstva ---
+ {t:"skup",x:"Aké teplo musíme dodať ľadu 2 kg pri teplote topenia, aby sa zmenil na vodu tej istej teploty? (l_t = 334)",
+  s:["Q = m · l_t = 2 · 334"],a:"Q = 668 kJ"},
+ {t:"skup",x:"Oceľový odliatok 250 g má teplotu tavenia. Koľko tepla prijme, kým sa roztaví? (l_t = 258)",
+  s:["250 g = 0,25 kg","Q = m · l_t = 0,25 · 258"],a:"Q = 64,5 kJ"},
+ {t:"skup",x:"Aké teplo treba dodať vode 5 kg pri 100 °C, aby sa premenila na paru tej istej teploty? (l_v = 2260)",
+  s:["Q = m · l_v = 5 · 2260"],a:"Q = 11 300 kJ"},
+ {t:"skup",x:"Ľad 3 kg, −10 °C → voda 20 °C. Koľko tepla musíme dodať? (c_ľ=2,09 · l_t=334 · c_v=4,18)",
+  s:["Q₁ ohrev ľadu: 3 · 2,09 · 10 = 62,7","Q₂ topenie: 3 · 334 = 1002","Q₃ ohrev vody: 3 · 4,18 · 20 = 250,8","Q = 62,7 + 1002 + 250,8"],a:"Q = 1315,5 kJ"},
+ {t:"skup",x:"Hliníkový odliatok 4 kg sa ochladí z 800 °C na 20 °C, teplota tuhnutia 660 °C. (c=896 J · l_t=399)",
+  s:["Q₁ chladenie 800→660: 4 · 0,896 · 140 = 501,76","Q₂ tuhnutie pri 660: 4 · 399 = 1596","Q₃ chladenie 660→20: 4 · 0,896 · 640 = 2293,76","Q = súčet"],a:"Q ≈ 4391,5 kJ"},
+ {t:"skup",x:"Voda 2 kg (80 °C) sa ohreje na 100 °C a premení na paru. Koľko tepla treba? (l_v=2260 · c=4,18)",
+  s:["Q₁ ohrev 80→100: 2 · 4,18 · 20 = 167,2","Q₂ vyparenie: 2 · 2260 = 4520","Q = 167,2 + 4520"],a:"Q = 4687,2 kJ"},
+ {t:"skup",x:"Koľko tepla treba dodať ľadu 3,5 kg pri 0 °C, aby sa zmenil na vodu tej istej teploty? (l_t=334)",
+  s:["Q = m · l_t = 3,5 · 334"],a:"Q = 1169 kJ"},
+ {t:"skup",x:"Cínový odliatok 400 g pri teplote tuhnutia. Koľko tepla odovzdá, kým stuhne? (l_t = 15,8)",
+  s:["400 g = 0,4 kg","Q = m · l_t = 0,4 · 15,8"],a:"Q = 6,32 kJ",n:"Počítaj s l_t = 15,8 zo zadania (skutočná hodnota pre cín je ~59 kJ/kg, ale použi to, čo je na pracovnom liste)."},
+ {t:"skup",x:"Koľko tepla treba dodať vode 1,6 kg pri 100 °C, aby sa zmenila na paru tej istej teploty? (l_v=2260)",
+  s:["Q = m · l_v = 1,6 · 2260"],a:"Q = 3616 kJ"}
+];
+
+/* ---------- RU: znenie úloh + poznámky ---------- */
+const P_RU=[
+ {x:"Вода 1,2 кг нагревается с 10 °C до 50 °C. Сколько теплоты она приняла?"},
+ {x:"Алюминиевый шарик 175 г остыл с 84 °C до 19 °C. Сколько теплоты он отдал? (c = 0,896)"},
+ {x:"Серебряная цепочка 14 г нагрелась с 18 °C до 36 °C. (c = 0,234)",n:"В условии указано 0,058 кДж — разница только из-за округления."},
+ {x:"Железный валик 222 г нагрелся с 24 °C до 95 °C. (c = 0,45)"},
+ {x:"Глицерин 2 кг, температура повышается на 10 °C. (c = 2,39 = 2390 Дж)"},
+ {x:"Стальная поковка 540 г помещена в печь, температура поднялась с 15 °C до 600 °C. (c = 460 Дж)"},
+ {x:"Вода в 120-литровом бойлере нагревается с 20 °C до 80 °C. (c = 4,2)"},
+ {x:"После жарки осталось 1,8 кг масла с температурой 140 °C. Сколько теплоты оно выделит, пока остынет до 20 °C? (c = 2)"},
+ {x:"Через радиаторы протекло 900 м³ тёплой воды, вход 60 °C, выход 40 °C. Сколько теплоты вода отдала? (c = 4,2)",n:"Ключ считает с m = 900 (кг). Физически 900 м³ воды = 900 000 кг — но держись ответа из подготовки (75,6 МДж)."},
+ {x:"Алюминиевое тело 600 г охлаждается в водяной бане с 345 °C до 20 °C. Сколько теплоты отдаст воде? (c = 0,896)"},
+ {x:"Медное тело 850 г охлаждается с 145 °C до 18 °C. Сколько теплоты отдаст воде? (c = 0,383)"},
+ {x:"Сколько теплоты потратится на нагрев 10 кг железа с 20 °C до 500 °C? (c = 0,45)"},
+ {x:"Воде 5 кг с температурой 20 °C сообщили 1365 кДж теплоты. До какой температуры она нагрелась?",n:"Здесь ищем температуру (тип «Δt»), но это та же семья формул."},
+ {x:"Кубик льда 650 г, температура повышается с −8 °C до −1 °C. (c = 2100 Дж)",n:"Внимание: лёд всё время твёрдый (−8…−1 °C), поэтому это только нагрев, без плавления."},
+ {x:"Фарфоровая тарелка 180 г остывает на 32 °C. (c = 1087 Дж)"},
+ {x:"Латунная отливка 500 г нагревается с 48 °C до 320 °C. (c = 394 Дж)"},
+ {x:"Железное тело 20 кг, температура падает с 580 °C до 20 °C. (c = 0,45)"},
+ {x:"Медная отливка 15 кг остыла на 320 °C. (c = 0,383)"},
+ {x:"Сколько теплоты приняла вода 750 кг, если нагрелась с 37 °C до 63 °C?",n:"При c = 4,2 получится 81 900 кДж."},
+ {x:"Кубик льда 0,5 кг, температура поднялась с −15 °C до −4 °C. (c = 2090 Дж)"},
+ {x:"Вода объёмом 200 мл, температура повышается на 20 °C. Сколько теплоты она примет?"},
+ {x:"Вода объёмом 250 мл, температура повышается на 30 °C."},
+ {x:"В сосуде масло объёмом 3,5 литра. Сколько теплоты оно отдаст при охлаждении с 50 °C до 10 °C? (c = 2)",n:"Если бы учитель взял 3,5 л = 3,5 кг, вышло бы 280 кДж. Масло легче воды, поэтому использована плотность."},
+ // --- find c ---
+ {x:"Стальное тело 2 кг нагрелось с 15 °C до 80 °C за счёт 60 кДж. Вычисли c."},
+ {x:"Неизвестной жидкости 0,5 кг (20 °C) сообщили 62,7 кДж, она нагрелась до 80 °C. Что это за жидкость?"},
+ {x:"Телу 1,8 кг сообщили 56,304 кДж теплоты, температура поднялась с 15 °C до 83 °C. Вычисли c."},
+ {x:"Жидкость 650 г, приняв 20,88 кДж, повысила температуру с 18 °C до 35 °C. Определи c."},
+ {x:"Телу 4 кг сообщили 672 кДж, оно нагрелось с 30 °C до 70 °C. Чему равно c?"},
+ // --- find m ---
+ {x:"Вычисли массу воды, которая при охлаждении с 62 °C до 37 °C отдала 522,5 кДж.",n:"При c = 4,18 выходит ровно 5 кг; ключ считает с c = 4,2."},
+ {x:"Оловянное тело отдало 45 400 Дж, его температура упала на 100 °C. Вычисли массу. (c = 227 Дж)"},
+ {x:"Вычисли массу воды, которая за счёт 84 кДж повысила температуру с 30 °C до 40 °C."},
+ // --- find dt / teplota ---
+ {x:"Медный цилиндр 15 кг при охлаждении отдал 114,9 кДж. На сколько °C он остыл? (c = 0,383)"},
+ {x:"До какой температуры нагреется вода 400 г (20 °C), если ей сообщить 25 080 Дж? (c = 4,2)"},
+ {x:"На сколько °C изменится температура железного ключа 0,004 т, если он примет 360 000 Дж? (c = 0,45)"},
+ {x:"До какой температуры нагреется вода 300 г (15 °C), если ей сообщить 0,03 МДж?"},
+ // --- kalorimeter ---
+ {x:"Железный груз 100 г (100 °C) + холодная вода (27 °C) → установилось 30 °C. Сколько теплоты груз отдал воде?"},
+ {x:"Сколько теплоты в калориметре приняла вода от груза? (из предыдущей задачи)"},
+ {x:"Сколько холодной воды налили в калориметр? Вода нагрелась с 27 °C до 30 °C."},
+ // --- zmena skupenstva ---
+ {x:"Сколько теплоты надо сообщить льду 2 кг при температуре плавления, чтобы он превратился в воду той же температуры? (l_t = 334)"},
+ {x:"Стальная отливка 250 г при температуре плавления. Сколько теплоты она примет, пока расплавится? (l_t = 258)"},
+ {x:"Сколько теплоты надо сообщить воде 5 кг при 100 °C, чтобы она превратилась в пар той же температуры? (l_v = 2260)"},
+ {x:"Лёд 3 кг, −10 °C → вода 20 °C. Сколько теплоты надо сообщить? (c_л=2,09 · l_t=334 · c_в=4,18)"},
+ {x:"Алюминиевая отливка 4 кг охлаждается с 800 °C до 20 °C, температура отвердевания 660 °C. (c=896 Дж · l_t=399)"},
+ {x:"Вода 2 кг (80 °C) нагревается до 100 °C и превращается в пар. Сколько теплоты нужно? (l_v=2260 · c=4,18)"},
+ {x:"Сколько теплоты надо сообщить льду 3,5 кг при 0 °C, чтобы он превратился в воду той же температуры? (l_t=334)"},
+ {x:"Оловянная отливка 400 г при температуре отвердевания. Сколько теплоты она отдаст, пока затвердеет? (l_t = 15,8)",n:"Считай с l_t = 15,8 из условия (настоящее значение для олова ~59 кДж/кг, но используй то, что на рабочем листе)."},
+ {x:"Сколько теплоты надо сообщить воде 1,6 кг при 100 °C, чтобы она превратилась в пар той же температуры? (l_v=2260)"}
+];
+
+/* ---------- RENDER PROBLEMS ---------- */
+const host=document.getElementById('problems-host');
+let activeFilter='all';
+
+function pillHtml(t){return `<span class="pill ${t}">${TYPES[t][0]}</span>`;}
+
+function render(){
+  host.innerHTML='';
+  P.forEach((p,i)=>{
+    if(activeFilter!=='all' && p.t!==activeFilter)return;
+    const r=P_RU[i]||{};
+    const div=document.createElement('div');div.className='prob';div.dataset.type=p.t;
+    div.innerHTML=`
+      <div class="head">
+        <div class="pn">${i+1}.</div>
+        <div class="ptext"><span ${attr(r.x)}>${p.x}</span><div class="tags">${pillHtml(p.t)}</div></div>
+      </div>
+      <div style="padding:0 18px 16px 60px"><button class="btn rev">Zobraz riešenie</button></div>
+      <div class="reveal">
+        <div class="solbox">
+          ${p.s.map(st=>`<div class="stepline">${st}</div>`).join('')}
+          <div class="answer">${p.a}</div>
+          ${p.n?`<div class="note" ${attr(r.n)}>${p.n}</div>`:''}
+        </div>
+      </div>`;
+    host.appendChild(div);
+  });
+  // bind reveal buttons
+  host.querySelectorAll('.rev').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const r=b.closest('.prob').querySelector('.reveal');
+      const open=r.classList.toggle('open');
+      b.textContent=open?'Skry riešenie':'Zobraz riešenie';
+      b.classList.toggle('active',open);
+    });
+  });
+  attachRu(host);
+}
+
+/* filters */
+const fHost=document.getElementById('filters');
+const filterDefs=[['all','Všetky'],['q','Teplo Q'],['c','Kapacita c'],['m','Hmotnosť m'],['dt','Teplota'],['kal','Kalorimeter'],['skup','Skupenstvo']];
+filterDefs.forEach(([code,label])=>{
+  const b=document.createElement('button');b.textContent=label;if(code==='all')b.classList.add('on');
+  b.addEventListener('click',()=>{
+    activeFilter=code;
+    fHost.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');render();
+  });
+  fHost.appendChild(b);
+});
+
+/* toggle all */
+let allOpen=false;
+document.getElementById('toggleAll').addEventListener('click',function(){
+  allOpen=!allOpen;
+  host.querySelectorAll('.reveal').forEach(r=>r.classList.toggle('open',allOpen));
+  host.querySelectorAll('.rev').forEach(b=>{b.textContent=allOpen?'Skry riešenie':'Zobraz riešenie';b.classList.toggle('active',allOpen);});
+  this.textContent=allOpen?'Zbaliť všetky riešenia':'Rozbaliť všetky riešenia';
+});
+
+render();
+
+/* ---------- CALCULATOR ---------- */
+const cSel=document.getElementById('cSel');
+const cIn=document.getElementById('cIn'),mIn=document.getElementById('mIn'),dtIn=document.getElementById('dtIn');
+const optBlank=document.createElement('option');optBlank.value='';optBlank.textContent='— vlastné c —';cSel.appendChild(optBlank);
+CTAB.forEach(([n,v])=>{const o=document.createElement('option');o.value=v;o.textContent=`${n}  (${v})`;cSel.appendChild(o);});
+cSel.value='4.18';
+cSel.addEventListener('change',()=>{if(cSel.value){cIn.value=cSel.value;}calc();});
+function calc(){
+  const c=parseFloat(cIn.value)||0,m=parseFloat(mIn.value)||0,dt=parseFloat(dtIn.value)||0;
+  const kj=m*c*dt;
+  document.getElementById('resKj').textContent=(Math.round(kj*1000)/1000).toLocaleString('sk-SK');
+  document.getElementById('resJ').textContent=Math.round(kj*1000).toLocaleString('sk-SK');
+}
+[cIn,mIn,dtIn].forEach(el=>el.addEventListener('input',calc));
+calc();
+
+/* ---------- RU: štart prekladu + globálne prepínanie ---------- */
+attachRu(document);
+updatePager('teoria');
+document.getElementById('ruToggle').addEventListener('click',function(){
+  ruAll=!ruAll;
+  document.querySelectorAll('.ru').forEach(b=>b.classList.toggle('open',ruAll));
+  this.textContent=ruAll?'Skryť preklad / Скрыть перевод':'Ukázať preklad / Показать перевод';
+  this.classList.toggle('active',ruAll);
+});
+</script>
+</body>
+</html>

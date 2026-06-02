@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Уроки для Пети</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Spectral:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4ecdd;
+    --paper-2:#ece0cb;
+    --ink:#2a2117;
+    --ink-soft:#5d5142;
+    --line:#d8c8ac;
+    --hot:#d64525;
+    --hot-2:#e8843b;
+    --cold:#1c6f68;
+    --cold-soft:#e2efe9;
+    --gold:#b6862c;
+    --shadow:0 2px 0 rgba(42,33,23,.08), 0 12px 30px -18px rgba(42,33,23,.5);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Spectral",Georgia,serif;
+    background:
+      radial-gradient(1200px 500px at 80% -10%, rgba(232,132,59,.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(28,111,104,.10), transparent 55%),
+      var(--paper);
+    color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 18px 90px}
+  .mono{font-family:"IBM Plex Mono",monospace}
+
+  header.top{padding:62px 0 14px;text-align:center}
+  .kicker{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;color:var(--hot);font-weight:600}
+  header.top h1{font-family:"Fraunces",serif;font-weight:900;font-size:clamp(2.8rem,10vw,4.8rem);line-height:.95;letter-spacing:-.02em;margin:.16em 0 .14em;
+    background:linear-gradient(95deg,var(--hot) 0%,var(--hot-2) 55%,var(--gold) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  header.top p{color:var(--ink-soft);font-size:1.08rem;font-style:italic;max-width:540px;margin:0 auto}
+  .dots{display:inline-flex;gap:6px;margin-top:18px}
+  .dots i{width:8px;height:8px;border-radius:50%;display:block;animation:pulse 2.4s ease-in-out infinite}
+  .dots i:nth-child(1){background:var(--cold)}
+  .dots i:nth-child(2){background:var(--gold);animation-delay:.3s}
+  .dots i:nth-child(3){background:var(--hot-2);animation-delay:.6s}
+  .dots i:nth-child(4){background:var(--hot);animation-delay:.9s}
+  @keyframes pulse{0%,100%{transform:scale(.7);opacity:.5}50%{transform:scale(1.15);opacity:1}}
+
+  .stat{display:flex;gap:26px;justify-content:center;margin:34px 0 6px;flex-wrap:wrap}
+  .stat div{text-align:center}
+  .stat .n{font-family:"Fraunces",serif;font-weight:900;font-size:1.9rem;color:var(--ink);line-height:1}
+  .stat .l{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:4px}
+
+  .subj{margin-top:46px}
+  .subj h2{font-family:"Fraunces",serif;font-weight:900;font-size:1.7rem;letter-spacing:-.01em;display:flex;align-items:center;gap:12px;margin-bottom:4px}
+  .subj h2 .ic{font-size:1.4rem}
+  .subj .sline{height:2px;background:linear-gradient(90deg,var(--line),transparent);margin:10px 0 18px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+
+  a.card{display:flex;flex-direction:column;text-decoration:none;color:inherit;
+    background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px 22px;box-shadow:var(--shadow);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;position:relative;overflow:hidden}
+  a.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent,var(--hot));transition:width .18s}
+  a.card:hover{transform:translateY(-3px);box-shadow:0 2px 0 rgba(42,33,23,.08),0 22px 40px -22px rgba(42,33,23,.6);border-color:var(--accent,var(--hot))}
+  a.card:hover::before{width:6px}
+  .crow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+  .ctitle{font-family:"Fraunces",serif;font-weight:600;font-size:1.28rem;line-height:1.15}
+  .cdesc{color:var(--ink-soft);font-size:.97rem;flex:1}
+  .cmeta{display:flex;gap:8px;align-items:center;margin-top:16px;flex-wrap:wrap}
+  .tag{font-family:"IBM Plex Mono",monospace;font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;padding:3px 9px;border-radius:999px}
+  .tag.sk{background:#fde7d8;color:var(--hot)}
+  .tag.ru{background:var(--cold-soft);color:var(--cold)}
+  .tag.date{background:#efe6cf;color:var(--gold)}
+  .tag.test{background:#f6d9d2;color:#b03a23}
+  .go{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:.78rem;font-weight:600;color:var(--accent,var(--hot));display:inline-flex;align-items:center;gap:4px}
+  .go .arr{transition:transform .18s}
+  a.card:hover .go .arr{transform:translateX(4px)}
+
+  .empty{border:1.5px dashed var(--line);border-radius:16px;padding:22px;text-align:center;color:var(--ink-soft);font-style:italic;background:transparent}
+
+  .howto{margin-top:54px;background:var(--cold-soft);border:1px solid #bfe0d7;border-radius:16px;padding:6px 22px}
+  .howto summary{cursor:pointer;font-family:"IBM Plex Mono",monospace;font-size:.82rem;font-weight:600;color:var(--cold);padding:14px 0;list-style:none;display:flex;align-items:center;gap:8px}
+  .howto summary::-webkit-details-marker{display:none}
+  .howto summary::before{content:"▸";transition:transform .18s}
+  .howto[open] summary::before{transform:rotate(90deg)}
+  .howto .body{padding:0 0 18px;font-size:.95rem;color:var(--ink)}
+  .howto code{font-family:"IBM Plex Mono",monospace;background:#fff;border:1px solid #bfe0d7;border-radius:5px;padding:1px 6px;font-size:.85rem}
+  .howto pre{background:#fff;border:1px solid #bfe0d7;border-radius:10px;padding:14px;overflow:auto;font-family:"IBM Plex Mono",monospace;font-size:.82rem;line-height:1.5;margin:10px 0}
+  .howto ol{margin:8px 0 8px 20px}
+  .howto li{margin:6px 0}
+
+  footer{text-align:center;margin-top:48px;color:var(--ink-soft);font-size:.85rem;font-style:italic}
+  footer a{color:var(--cold);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">Учебная страница</div>
+    <h1>Уроки для&nbsp;Пети</h1>
+    <p>Маленькая библиотека интерактивных тренажёров и разборов к школьным темам. Открываешь карточку — и занимаешься.</p>
+    <div class="dots"><i></i><i></i><i></i><i></i></div>
+    <div class="stat">
+      <div><div class="n" id="stLessons">0</div><div class="l">уроков</div></div>
+      <div><div class="n" id="stSubj">0</div><div class="l">предметов</div></div>
+    </div>
+  </header>
+
+  <main id="host"></main>
+
+  <details class="howto">
+    <summary>Как добавить новый урок (для папы)</summary>
+    <div class="body">
+      <ol>
+        <li>Положи HTML-страницу урока в папку предмета, например <code>fizika/optika.html</code>. Если предмет новый — создай папку (<code>matematika/</code>, <code>chemia/</code> и т.д.).</li>
+        <li>Открой этот <code>index.html</code> и найди внизу массив <code>LESSONS</code> в теге <code>&lt;script&gt;</code>.</li>
+        <li>Добавь один объект — и всё, карточка появится сама:</li>
+      </ol>
+      <pre>{
+  subject: "fizika",              // ключ предмета (см. SUBJECTS)
+  title:   "Оптика",              // заголовок карточки
+  desc:    "Линзы, преломление…", // краткое описание (рус.)
+  href:    "fizika/optika.html",  // путь к файлу
+  lang:    "sk",                  // язык урока: "sk" или "ru"
+  date:    "2026-06-10",          // дата (необязательно)
+  badge:   "контрольная"          // ярлык (необязательно)
+}</pre>
+      <p>Новый предмет добавляется в объект <code>SUBJECTS</code> рядом (ключ → название, иконка-эмодзи и цвет). Предметы без уроков просто не показываются.</p>
+    </div>
+  </details>
+
+  <footer>
+    Часть сайта <a href="../">ur5fot.github.io</a> · сделано для подготовки к школе
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   ПРЕДМЕТЫ — ключ: { название, иконка (эмодзи), акцентный цвет }
+   ============================================================ */
+const SUBJECTS = {
+  fizika:    { name: "Физика",     icon: "🔥", color: "#d64525" },
+  matematika:{ name: "Математика", icon: "📐", color: "#1c6f68" },
+  chemia:    { name: "Химия",      icon: "⚗️", color: "#7a4ba0" },
+  ostatne:   { name: "Другое",     icon: "✦",  color: "#b6862c" }
+};
+
+/* ============================================================
+   УРОКИ — просто добавляй сюда новые объекты (см. блок «Как добавить»)
+   ============================================================ */
+const LESSONS = [
+  {
+    subject: "fizika",
+    title:   "Теплота (Teplo)",
+    desc:    "Тренажёр по теме «Teplo»: формула Q = m·c·Δt, смена агрегатного состояния, таблица теплоёмкостей, 6 разобранных примеров и 47 задач с пошаговыми решениями. На словацком — язык контрольной.",
+    href:    "fizika/teplo.html",
+    lang:    "sk",
+    date:    "2026-06-04",
+    badge:   "контрольная"
+  }
+  // следующий урок добавляй здесь ↓
+];
+
+/* ============================================================
+   Рендер — менять не нужно
+   ============================================================ */
+const host = document.getElementById('host');
+
+function fmtDate(iso){
+  if(!iso) return null;
+  const d = new Date(iso + "T00:00:00");
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('ru-RU', { day:'numeric', month:'short', year:'numeric' });
+}
+
+// группируем уроки по предметам в порядке SUBJECTS
+const order = Object.keys(SUBJECTS);
+let lessonCount = 0, subjCount = 0;
+
+order.forEach(key => {
+  const subj = SUBJECTS[key];
+  const items = LESSONS.filter(l => l.subject === key);
+  if(items.length === 0) return;
+  subjCount++;
+
+  const sec = document.createElement('section');
+  sec.className = 'subj';
+  sec.innerHTML = `<h2><span class="ic">${subj.icon}</span>${subj.name}</h2><div class="sline"></div>`;
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+
+  items.forEach(l => {
+    lessonCount++;
+    const a = document.createElement('a');
+    a.className = 'card';
+    a.href = l.href;
+    a.style.setProperty('--accent', subj.color);
+    const langTag = l.lang === 'ru'
+      ? '<span class="tag ru">RU</span>'
+      : '<span class="tag sk">SK</span>';
+    const dateTag  = l.date  ? `<span class="tag date">${fmtDate(l.date)}</span>` : '';
+    const badgeTag = l.badge ? `<span class="tag test">${l.badge}</span>` : '';
+    a.innerHTML = `
+      <div class="crow"><div class="ctitle">${l.title}</div></div>
+      <div class="cdesc">${l.desc}</div>
+      <div class="cmeta">
+        ${langTag}${dateTag}${badgeTag}
+        <span class="go">открыть <span class="arr">→</span></span>
+      </div>`;
+    grid.appendChild(a);
+  });
+
+  sec.appendChild(grid);
+  host.appendChild(sec);
+});
+
+// уроки с неизвестным предметом — в «Другое» (на всякий случай)
+const orphans = LESSONS.filter(l => !SUBJECTS[l.subject]);
+if(orphans.length){
+  const sec = document.createElement('section');
+  sec.className = 'subj';
+  sec.innerHTML = `<h2><span class="ic">✦</span>Другое</h2><div class="sline"></div>`;
+  const grid = document.createElement('div'); grid.className='grid';
+  orphans.forEach(l=>{
+    lessonCount++;
+    const a=document.createElement('a');a.className='card';a.href=l.href;
+    a.innerHTML=`<div class="crow"><div class="ctitle">${l.title}</div></div>
+      <div class="cdesc">${l.desc||''}</div>
+      <div class="cmeta"><span class="go">открыть <span class="arr">→</span></span></div>`;
+    grid.appendChild(a);
+  });
+  sec.appendChild(grid);host.appendChild(sec);subjCount++;
+}
+
+if(lessonCount === 0){
+  host.innerHTML = '<div class="empty">Пока уроков нет. Добавь первый в массив LESSONS ниже в коде.</div>';
+}
+
+document.getElementById('stLessons').textContent = lessonCount;
+document.getElementById('stSubj').textContent = subjCount;
+</script>
+</body>
+</html>
