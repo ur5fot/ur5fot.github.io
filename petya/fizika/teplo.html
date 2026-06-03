@@ -93,6 +93,7 @@
   .pill.dt{background:#e8ddf0;color:#7a4ba0}
   .pill.kal{background:#dde9f3;color:#3a6ea5}
   .pill.skup{background:#f6d9d2;color:#b03a23}
+  .pill.ws{background:transparent;border:1px solid var(--line);color:var(--ink-soft);font-weight:600}
 
   /* TABLE */
   table.ctab{width:100%;border-collapse:collapse;margin:8px 0;font-size:.98rem}
@@ -703,6 +704,9 @@ const P_RU=[
  {x:"Сколько теплоты надо сообщить воде 1,6 кг при 100 °C, чтобы она превратилась в пар той же температуры? (l_v=2260)"}
 ];
 
+/* ---------- Číslo úlohy na pracovnom liste učiteľa (poradie z listu; 7a/b/c = kalorimeter, S1..9 = zmena skupenstva) ---------- */
+const P_WS=["1","2","3","4","8","12","13","14","15","17","18","19","22","23","24","25","26","27","28","29","33","35","36","5","6","16","30","34","9","20","32","10","11","21","31","7a","7b","7c","S1","S2","S3","S4","S5","S6","S7","S8","S9"];
+
 /* ---------- RENDER PROBLEMS ---------- */
 const host=document.getElementById('problems-host');
 let activeFilter='all';
@@ -718,7 +722,7 @@ function render(){
     div.innerHTML=`
       <div class="head">
         <div class="pn">${i+1}.</div>
-        <div class="ptext"><span ${attr(r.x)}>${p.x}</span><div class="tags">${pillHtml(p.t)}</div></div>
+        <div class="ptext"><span ${attr(r.x)}>${p.x}</span><div class="tags">${pillHtml(p.t)}${P_WS[i]?`<span class="pill ws">📄 ${P_WS[i]}</span>`:''}</div></div>
       </div>
       <div style="padding:0 18px 16px 60px"><button class="btn rev">Zobraz riešenie</button></div>
       <div class="reveal">
