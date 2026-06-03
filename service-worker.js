@@ -1,4 +1,4 @@
-const CACHE_NAME = 'timerec-cache-v3';
+const CACHE_NAME = 'timerec-cache-v4';
 const OFFLINE_URLS = [
   './',
   './index.html',
