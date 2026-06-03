@@ -93,7 +93,7 @@
   .pill.dt{background:#e8ddf0;color:#7a4ba0}
   .pill.kal{background:#dde9f3;color:#3a6ea5}
   .pill.skup{background:#f6d9d2;color:#b03a23}
-  .pill.ws{background:transparent;border:1px solid var(--line);color:var(--ink-soft);font-weight:600}
+  .prob .pn{min-width:34px;width:auto}
 
   /* TABLE */
   table.ctab{width:100%;border-collapse:collapse;margin:8px 0;font-size:.98rem}
@@ -192,17 +192,17 @@
   </div>
 
   <nav class="tabs" id="tabs">
-    <button data-tab="teoria" class="active">Teória</button>
+    <button data-tab="teoria">Teória</button>
     <button data-tab="postup">Postup</button>
     <button data-tab="priklady">Vzorové príklady</button>
-    <button data-tab="precvic">Precvičovanie</button>
+    <button data-tab="precvic" class="active">Precvičovanie</button>
     <button data-tab="kalk">Kalkulačka</button>
   </nav>
 
   <main>
 
   <!-- ============ TEORIA ============ -->
-  <section id="teoria" class="show">
+  <section id="teoria">
     <h2 class="sec"><span class="num">01 — Základy</span><span data-ru="Что такое теплота и какую формулу применять">Čo je teplo a aký vzorec použiť</span></h2>
     <p class="lead" data-ru="Теплота Q — это энергия, которую тело принимает (нагревается) или отдаёт (охлаждается). Почти вся контрольная держится на одной формуле.">Teplo Q je energia, ktorú teleso <b>prijme</b> (ohrieva sa) alebo <b>odovzdá</b> (chladne). Skoro celá kontrolná stojí na jednom vzorci.</p>
 
@@ -306,7 +306,7 @@
   </section>
 
   <!-- ============ PRECVIC ============ -->
-  <section id="precvic">
+  <section id="precvic" class="show">
     <h2 class="sec"><span class="num">04 — Tréning</span><span data-ru="Все задачи из подготовки">Všetky úlohy z prípravy</span></h2>
     <p class="lead" data-ru="Сначала попробуй посчитать сам, потом нажми «Zobraz riešenie» (Показать решение). Фильтруй по типу, если хочешь тренировать один вид.">Najprv skús vypočítať sám, potom klikni na <b>Zobraz riešenie</b>. Filtruj podľa typu, ak chceš trénovať jeden druh.</p>
     <div class="filters" id="filters"></div>
@@ -713,16 +713,25 @@ let activeFilter='all';
 
 function pillHtml(t){return `<span class="pill ${t}">${TYPES[t][0]}</span>`;}
 
+function wsKey(w){
+  if(!w) return 999;
+  if(w[0]==='S') return 100 + parseInt(w.slice(1),10);
+  const m=String(w).match(/^(\d+)([a-c]?)$/);
+  return m ? parseInt(m[1],10) + (m[2] ? (m[2].charCodeAt(0)-96)/10 : 0) : 999;
+}
+const ORDER=P.map((_,i)=>i).sort((a,b)=>wsKey(P_WS[a])-wsKey(P_WS[b]));
+
 function render(){
   host.innerHTML='';
-  P.forEach((p,i)=>{
+  ORDER.forEach(i=>{
+    const p=P[i];
     if(activeFilter!=='all' && p.t!==activeFilter)return;
     const r=P_RU[i]||{};
     const div=document.createElement('div');div.className='prob';div.dataset.type=p.t;
     div.innerHTML=`
       <div class="head">
-        <div class="pn">${i+1}.</div>
-        <div class="ptext"><span ${attr(r.x)}>${p.x}</span><div class="tags">${pillHtml(p.t)}${P_WS[i]?`<span class="pill ws">📄 ${P_WS[i]}</span>`:''}</div></div>
+        <div class="pn">${P_WS[i]||(i+1)}</div>
+        <div class="ptext"><span ${attr(r.x)}>${p.x}</span><div class="tags">${pillHtml(p.t)}</div></div>
       </div>
       <div style="padding:0 18px 16px 60px"><button class="btn rev">Zobraz riešenie</button></div>
       <div class="reveal">
@@ -788,7 +797,7 @@ calc();
 
 /* ---------- RU: štart prekladu + globálne prepínanie ---------- */
 attachRu(document);
-updatePager('teoria');
+updatePager('precvic');
 document.getElementById('ruToggle').addEventListener('click',function(){
   ruAll=!ruAll;
   document.querySelectorAll('.ru').forEach(b=>b.classList.toggle('open',ruAll));
